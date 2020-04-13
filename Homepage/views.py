@@ -85,24 +85,26 @@ def upload(request):
     else:
         #Http404("Profile does not found")
         raise Http404("Profile does not found")
-def change_password(request):
-    if request.method == 'POST':
-        form = PasswordChangeForm(data=request.POST,user=request.user)
-
-        if form.is_valid():
-            form.save()
-            update_session_auth_hash(request,form.user)
-            messages.success(request, 'Your password was successfully updated!')
-            return redirect('change_password')
+def change_password(request): # เปลี่ยนรหัสผ่านของไอดีผู้ใช้งาน
+    if request.method == 'POST': # ถ้า method ที่ได้มามีค่าเป็น POST 
+        form = PasswordChangeForm(data=request.POST,user=request.user) #สร้าง formในการเปลี่ยนรหัสผ่าน
+        if form.is_valid(): #เช็คว่าในform ถูกต้องมั้ย
+            form.save() #นำค่าที่ไปเก็บไว้
+            update_session_auth_hash(request,form.user) # อัพเดทรหัสผ่านใหม่แทนที่อันเก่า
+            messages.success(request, 'Your password was successfully updated!') #แสดงข้อความเมื่อทำงานได้
+            return redirect('change_password') #ไปยังหน้า เปลี่ยนรหัส
         else:
-            messages.error(request, 'Please correct the error below.')
+            messages.error(request, 'Please correct the error below.') #แสดงข้อความเมื่อเกิดข้อผิดพลาด
     else:
         form = PasswordChangeForm(user=request.user) 
-    return render(request,'change_password.html',{'form':form})
+    return render(request,'change_password.html',{'form':form}) # ทำการ render html เพื่อแสดงหน้าเปลี่ยนรหัสผ่านของผู้ใช้งาน
+
 def about(request):
-    return render(request,'about.html')
+    return render(request,'about.html')# ทำการ render html เพื่อแสดงหน้า about
+
 def help(request):
-    return render(request,'help.html')
+    return render(request,'help.html') # ทำการ render html เพื่อแสดงหน้า help
+
 def lecture(request,lecture_id):
     if request.method == 'POST':
         profileObj = Profile.objects.get(user = request.user)

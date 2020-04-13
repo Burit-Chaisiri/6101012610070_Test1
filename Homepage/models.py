@@ -29,7 +29,7 @@ class Lecture(models.Model):
 # Model ของ รูปที่อัพพร้อม Lecture
 class Lecture_img(models.Model):
     LectureKey = models.ForeignKey(Lecture, related_name='Lecture_img',on_delete=models.CASCADE,blank=True,null=True)
-    image = models.ImageField(upload_to='lecture_image',blank=True)
+    image = models.ImageField(upload_to='lecture_image',blank=True) #ไว้ใส่รูปภาพ
     def __str__(self):
         return self.image.name
 
