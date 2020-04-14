@@ -32,24 +32,25 @@ def signup(request): # สมัครไอดีที่จะเข้าใ
         form = UserCreationForm()
     return render(request, 'signup.html', {'form': form}) # ทำการ render html เพื่อแสดงหน้าสมัครไอดีที่ใช้งาน
 
-def home(request):
+def home(request): # หน้า home ของ Website 
     noteWithThumbnail = []
-    latestNote = []
-    popularNote = []
-    if request.GET.get('word'):
-        keyword = request.GET.get('word').lower()
-        for note in Lecture.objects.all():
+    latestNote = [] # สร้างมาเพื่อเก็บ note ที่พึ่งถูก uploadมา
+    popularNote = [] # สร้างมาเพื่อเก็บ note ที่ได้รับความนิยม
+    if request.GET.get('word'): # เช็คว่ามีอะไรถูกป้อนมามั้ย
+        keyword = request.GET.get('word').lower() #เปลี่ยน ให้เป็นตัวเล็ก เพื่อแก้ปัญหาตัวใหญ่ ตัวเล็ก 
+        for note in Lecture.objects.all(): #ทำการเช็คว่าคำที่ถูกป้อนมานั้นไปตรงกับ note ทุกๆอันที่มีอยู่รึเปล่า ถ้ามีก็จะแสดง note นั้นขึ้นมา
             if keyword in note.title.lower() or keyword in note.description.lower():
                 noteWithThumbnail.append(NoteWithThumbnail(note, note.Lecture_img.all()[0]))
-        return render(request, 'searchresult.html',{'noteWithThumbnail':noteWithThumbnail})
+        return render(request, 'searchresult.html',{'noteWithThumbnail':noteWithThumbnail}) # ทำการ render html เพื่อแสดงหน้าผลลัพธ์ของการค้นหา
     else:
+        #แสดง note ที่ถูกเก็บใน latestNote ทั้งหมด พร้อมรูปภาพ
         for note in Lecture.objects.all().order_by('-id')[:8][::-1]:
             latestNote.append(NoteWithThumbnail(note, note.Lecture_img.all()[0]))
-        
+        #แสดง note ที่ถูกเก็บใน popularNote ทั้งหมด พร้อมรูปภาพ
         for note in Lecture.objects.annotate(count=Count('userSaved')).order_by('count')[:8][::-1]:
             popularNote.append(NoteWithThumbnail(note, note.Lecture_img.all()[0]))
 
-        return render(request, 'home.html',{'latestNote':latestNote, 'popularNote':popularNote})
+        return render(request, 'home.html',{'latestNote':latestNote, 'popularNote':popularNote})# ทำการ render html เพื่อแสดงหน้า home พร้อมแสดง  latestNote และ popularNote
 
 def upload(request):
     if Profile.objects.filter(user=request.user):
@@ -99,7 +100,7 @@ def change_password(request): # เปลี่ยนรหัสผ่านข
         form = PasswordChangeForm(user=request.user) 
     return render(request,'change_password.html',{'form':form}) # ทำการ render html เพื่อแสดงหน้าเปลี่ยนรหัสผ่านของผู้ใช้งาน
 
-def about(request):
+def about(request): 
     return render(request,'about.html')# ทำการ render html เพื่อแสดงหน้า about
 
 def help(request):
