@@ -90,7 +90,7 @@ def upload(request):# หน้าที่ไว้อัพ Note
 
 def change_password(request): # เปลี่ยนรหัสผ่านของไอดีผู้ใช้งาน
     if request.method == 'POST': # ถ้า method ที่ได้มามีค่าเป็น POST 
-        form = PasswordChangeForm(data=request.POST,user=request.user) #สร้าง formในการเปลี่ยนรหัสผ่าน
+        form = PasswordChangeForm(data=request.POST,user=request.user) #สร้าง form ในการเปลี่ยนรหัสผ่าน
         if form.is_valid(): #เช็คว่าในform ถูกต้องมั้ย
             form.save() #นำค่าที่ไปเก็บไว้
             update_session_auth_hash(request,form.user) # อัพเดทรหัสผ่านใหม่แทนที่อันเก่า
@@ -108,38 +108,38 @@ def about(request):
 def help(request):
     return render(request,'help.html') # ทำการ render html เพื่อแสดงหน้า help
 
-def lecture(request,lecture_id):
-    if request.method == 'POST':
-        profileObj = Profile.objects.get(user = request.user)
-        noteObj = Lecture.objects.get(id = int(request.POST.get('noteID')))
+def lecture(request,lecture_id): 
+    if request.method == 'POST': # ถ้า method ที่ได้มามีค่าเป็น POST 
+        profileObj = Profile.objects.get(user = request.user) #ดึงข้อมูลของผู้ใช้งานมาเก็บไปไว้ในตัวแปร
+        noteObj = Lecture.objects.get(id = int(request.POST.get('noteID'))) #ดึง noteมาเก็บไว้ในตัวแปร
         if profileObj not in noteObj.userSaved.all():
-            noteObj.userSaved.add(profileObj)
-            noteObj.save()
-        return HttpResponseRedirect("/" + request.POST.get('noteID'))
+            noteObj.userSaved.add(profileObj)#ทำการเพิ่ม  profileObj เข้าไป
+            noteObj.save() #ทำการบันทึก
+        return HttpResponseRedirect("/" + request.POST.get('noteID')) #แสดงผลออกมา noteIDคือรหัสของnote
     else:
         noteObj = Lecture.objects.get(id = lecture_id)
-        imageObjList = noteObj.Lecture_img.all()
-        return render(request, 'notedetail.html',{'noteObj': noteObj, "imageObjList": imageObjList})
+        imageObjList = noteObj.Lecture_img.all() #ทำการเก็บรูปภาพทั้งหมดที่จะอัพไว้เพื่อแสดง
+        return render(request, 'notedetail.html',{'noteObj': noteObj, "imageObjList": imageObjList}) #ทำการ render html เพื่อแสดงnoteพร้อมรายละเอียด
 
 def profile(request, username):
-    userObj = User.objects.get(username = username)
-    profileObj = Profile.objects.get(user = userObj)
-    if request.method == 'POST':
-        form=Profileform(request.POST , request.FILES)
-        if form.is_valid():
+    userObj = User.objects.get(username = username) #ดึงชื่อของผู้ใช้งาน
+    profileObj = Profile.objects.get(user = userObj)#ดึง profile ของผู้ใช้งานมา
+    if request.method == 'POST':# ถ้า method ที่ได้มามีค่าเป็น POST 
+        form=Profileform(request.POST , request.FILES) # สร้างตัวแปรที่เก็บ modelของ forms ไว้
+        if form.is_valid(): #เช็คว่าในform ถูกต้องมั้ย
             profileObj.profilePicture = form.cleaned_data.get('profilePicture')
-            profileObj.save()
+            profileObj.save() #ทำการบันทึกค่า
             
-            return HttpResponseRedirect("/profile/"+username)
+            return HttpResponseRedirect("/profile/"+username) #ทำการแสดงหน้า 
     else:
-        form=Profileform()
-        myNote = []
-        savedNote = []
-        saves = 0
-        for note in profileObj.author.all():
+        form=Profileform()# สร้างตัวแปรที่เก็บ modelของ forms ไว้
+        myNote = []# note ที่ผู็ใช้งานได้ uploadไป
+        savedNote = [] #note ที่ผู้ใช้งานได้save
+        saves = 0 #จำนวน note ที่ผู้ใช้งานได้save
+        for note in profileObj.author.all(): #ทำการตรวจสอบใน profileของผู้ใช้งานทั้งหมด
             myNote.append(NoteWithThumbnail(note, note.Lecture_img.all()[0]))
             saves += note.userSaved.count()
-        for note in Lecture.objects.all():
+        for note in Lecture.objects.all():#ทำการตรวจสอบใน note ทั้งหมด
             if profileObj in note.userSaved.all():
                 savedNote.append(NoteWithThumbnail(note, note.Lecture_img.all()[0]))
-    return render(request,'profile.html',{'form': form, 'profile': profileObj, 'myNote': myNote, 'savedNote':savedNote, 'saves':saves})
+    return render(request,'profile.html',{'form': form, 'profile': profileObj, 'myNote': myNote, 'savedNote':savedNote, 'saves':saves}) #แสดงหน้าของprofile ผู้ใช้งาน 
