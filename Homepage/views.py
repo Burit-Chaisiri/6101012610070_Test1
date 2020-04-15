@@ -52,23 +52,24 @@ def home(request): # หน้า home ของ Website
 
         return render(request, 'home.html',{'latestNote':latestNote, 'popularNote':popularNote})# ทำการ render html เพื่อแสดงหน้า home พร้อมแสดง  latestNote และ popularNote
 
-def upload(request):
-    if Profile.objects.filter(user=request.user):
+def upload(request):# หน้าที่ไว้อัพ Note
+    if Profile.objects.filter(user=request.user): #เช็คว่ามีชื่อผู้ใช้งานอยู่รึเปล่า
         files=[]
-        profileObj = Profile.objects.get(user=request.user)
+        profileObj = Profile.objects.get(user=request.user) #ดึงข้อมูลของผู้ใช้งานมาเก็บไปไว้ในตัวแปร
         #ImageFormSet=modelformset_factory(Lecture_img,form=Lecture_imgForms, extra=1)
-        if request.method == 'POST':
+        if request.method == 'POST': # ถ้า method ที่ได้มามีค่าเป็น POST 
             
                 #for file in request.FILES:
                #files.append(request.FILES['form-0-image'])
 
-            LectureForm = LectureForms(request.POST)
+            LectureForm = LectureForms(request.POST) #เรียกใช้งาน LectureForms จาก forms.py 
             #Imageform = Lecture_imgForms(request.POST,request.FILES['image'])
-            if LectureForm.is_valid():
-                LectureForm = LectureForm.save(commit=False)
-                LectureForm.author = profileObj
-                LectureForm.save()
+            if LectureForm.is_valid(): #เช็คว่า forms นั้นถูกต้องมั้ย
+                LectureForm = LectureForm.save(commit=False) 
+                LectureForm.author = profileObj #นำชื่อผู้ใช้งานไปเก็บใน author ซึ่งเป็น model ที่ได้สร้างไว้
+                LectureForm.save() #บันทึกค่าล่าสุดไป
 
+                # image
                 for i in request.FILES.getlist('image'):
                     photo = Lecture_img.objects.create(LectureKey=LectureForm , image=i)
                     photo.save()
@@ -76,16 +77,17 @@ def upload(request):
                 # redirect to homepage
                 return redirect('/')
 
-            else:
+            else: # ถ้าไม่ถูกจะให้ข้อความว่าเกิดข้อผิดพลาด
                 Error="Please choose your file"
 
         else:
             LectureForm = LectureForms()
             Error=""
-        return render(request, 'upload.html',{'LectureForm': LectureForm,"Error":Error})
+        return render(request, 'upload.html',{'LectureForm': LectureForm,"Error":Error}) # ทำการ render html เพื่อแสดงหน้า  upload พร้อมแสดงสิ่งที่อัพลงไป กับ Error ถ้ามีข้อผิดพลาด
     else:
         #Http404("Profile does not found")
         raise Http404("Profile does not found")
+
 def change_password(request): # เปลี่ยนรหัสผ่านของไอดีผู้ใช้งาน
     if request.method == 'POST': # ถ้า method ที่ได้มามีค่าเป็น POST 
         form = PasswordChangeForm(data=request.POST,user=request.user) #สร้าง formในการเปลี่ยนรหัสผ่าน
