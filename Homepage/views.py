@@ -26,8 +26,13 @@ def signup(request): # สมัครไอดีที่จะเข้าใ
             raw_password = form.cleaned_data.get('password1')# นำข้อความที่อยู่ใน text ที่มีไอดีว่า password1 มาเก็บไว้
             Profile.objects.create(user = newUser) #สร้าง Profileขึ้นมา
             user = authenticate(username=username, password=raw_password) #กำหนดว่า user จะมี username กับ pass
+<<<<<<< HEAD
             login(request, user)#ทำการlogin โดยใช้userที่สมุคร
             return redirect('login') #ไปยัง html ที่แสดงหน้าการเข้าสู่ระบบ
+=======
+            login(request, user)
+            return redirect('login') #ไปยัง html ที่แสดงหน้าการเข้าสู้ระบบ
+>>>>>>> c8daf5cab3e3423c01b71c3e777f5215d1166684
     else:
         form = UserCreationForm()
     return render(request, 'signup.html', {'form': form}) # ทำการ render html เพื่อแสดงหน้าสมัครไอดีที่ใช้งาน
@@ -53,7 +58,7 @@ def home(request): # หน้า home ของ Website
 
         return render(request, 'home.html',{'latestNote':latestNote, 'popularNote':popularNote})# ทำการ render html เพื่อแสดงหน้า home พร้อมแสดง  latestNote และ popularNote
 
-def upload(request):# หน้าที่ไว้อัพ Note
+def upload(request):# หน้าที่ไว้อัพโหลด Note
     if Profile.objects.filter(user=request.user): #เช็คว่ามีชื่อผู้ใช้งานอยู่รึเปล่า
         files=[]
         profileObj = Profile.objects.get(user=request.user) #ดึงข้อมูลของผู้ใช้งานมาเก็บไปไว้ในตัวแปร
@@ -91,7 +96,7 @@ def change_password(request): # เปลี่ยนรหัสผ่านข
     if request.method == 'POST': # ถ้า method ที่ได้มามีค่าเป็น POST 
         form = PasswordChangeForm(data=request.POST,user=request.user) #สร้าง form ในการเปลี่ยนรหัสผ่าน
         if form.is_valid(): #เช็คว่าในform ถูกต้องมั้ย
-            form.save() #นำค่าที่ไปเก็บไว้
+            form.save() #ทำการบันทึก
             update_session_auth_hash(request,form.user) # อัพเดทรหัสผ่านใหม่แทนที่อันเก่า
             messages.success(request, 'Your password was successfully updated!') #แสดงข้อความเมื่อทำงานได้
             return redirect('change_password') #ไปยังหน้า เปลี่ยนรหัส
