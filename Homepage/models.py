@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-# Model ของ โปรไฟล์ของผู้ใช้งาน 
-class Profile(models.Model):
+
+class Profile(models.Model): # Model ของ โปรไฟล์ของผู้ใช้งาน 
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -15,10 +15,10 @@ class Profile(models.Model):
     )
     profilePicture = models.ImageField(upload_to="images/", blank=True, default=None, null=True)  # รูปภาพของ ผู้ใช้งาน 
     def __str__(self):
-        return self.user.username # ชื่อ ผู้ใช้งาน
+        return self.user.username # แสดงชื่อไอดีที่ได้สมัครของผู้ใช้งาน username=ชื่อไอดีของผู้ใช้งาน
 
-# Model ของ Lecture
-class Lecture(models.Model):
+
+class Lecture(models.Model): # Model ของ Lecture
     title = models.CharField(max_length=200,null=True) # กล่องข้อความที่ใส่ชื่อชื่อเรื่อง
     subject = models.CharField(max_length=200,null=True) # กล่องข้อความที่ใส่ชื่อวิชา
     description = models.CharField(max_length=2000,null=True)# กล่องข้อความที่ใส่รายละเอียด 

@@ -27,7 +27,7 @@ def signup(request): # สมัครไอดีที่จะเข้าใ
             Profile.objects.create(user = newUser) #สร้าง Profileขึ้นมา
             user = authenticate(username=username, password=raw_password) #กำหนดว่า user จะมี username กับ pass
             login(request, user)#ทำการlogin โดยใช้userที่สมุคร
-            return redirect('login') #ไปยัง html ที่แสดงหน้าการเข้าสู้ระบบ
+            return redirect('login') #ไปยัง html ที่แสดงหน้าการเข้าสู่ระบบ
     else:
         form = UserCreationForm()
     return render(request, 'signup.html', {'form': form}) # ทำการ render html เพื่อแสดงหน้าสมัครไอดีที่ใช้งาน
@@ -36,19 +36,20 @@ def home(request): # หน้า home ของ Website
     noteWithThumbnail = []
     latestNote = [] # สร้างมาเพื่อเก็บ note ที่พึ่งถูก uploadมา
     popularNote = [] # สร้างมาเพื่อเก็บ note ที่ได้รับความนิยม
-    if request.GET.get('word'): # เช็คว่ามีอะไรถูกป้อนมามั้ย
+    if request.GET.get('word'): # เช็คว่ามีข้อความถูกใส่มาบนช่อง text ของช่อง searchมั้ย
         keyword = request.GET.get('word').lower() #เปลี่ยน ให้เป็นตัวเล็ก เพื่อแก้ปัญหาตัวใหญ่ ตัวเล็ก 
         for note in Lecture.objects.all(): #ทำการเช็คว่าคำที่ถูกป้อนมานั้นไปตรงกับ note ทุกๆอันที่มีอยู่รึเปล่า ถ้ามีก็จะแสดง note นั้นขึ้นมา
             if keyword in note.title.lower() or keyword in note.description.lower():
                 noteWithThumbnail.append(NoteWithThumbnail(note, note.Lecture_img.all()[0]))
         return render(request, 'searchresult.html',{'noteWithThumbnail':noteWithThumbnail}) # ทำการ render html เพื่อแสดงหน้าผลลัพธ์ของการค้นหา
     else:
-        #แสดง note ที่ถูกเก็บใน latestNote ทั้งหมด พร้อมรูปภาพ
+        
         for note in Lecture.objects.all().order_by('-id')[:8][::-1]:
-            latestNote.append(NoteWithThumbnail(note, note.Lecture_img.all()[0]))
-        #แสดง note ที่ถูกเก็บใน popularNote ทั้งหมด พร้อมรูปภาพ
+            latestNote.append(NoteWithThumbnail(note, note.Lecture_img.all()[0])) #เพิ่ม note ที่ถูกเพิ่มมาล่าสุดไปยัง latestNote พร้อมรูปภาพ
+
+        
         for note in Lecture.objects.annotate(count=Count('userSaved')).order_by('count')[:8][::-1]:
-            popularNote.append(NoteWithThumbnail(note, note.Lecture_img.all()[0]))
+            popularNote.append(NoteWithThumbnail(note, note.Lecture_img.all()[0])) #เพิ่ม note ที่ถูก save จำนวนมากไปยัง popularNote พร้อมรูปภาพ
 
         return render(request, 'home.html',{'latestNote':latestNote, 'popularNote':popularNote})# ทำการ render html เพื่อแสดงหน้า home พร้อมแสดง  latestNote และ popularNote
 
@@ -56,14 +57,12 @@ def upload(request):# หน้าที่ไว้อัพ Note
     if Profile.objects.filter(user=request.user): #เช็คว่ามีชื่อผู้ใช้งานอยู่รึเปล่า
         files=[]
         profileObj = Profile.objects.get(user=request.user) #ดึงข้อมูลของผู้ใช้งานมาเก็บไปไว้ในตัวแปร
-        #ImageFormSet=modelformset_factory(Lecture_img,form=Lecture_imgForms, extra=1)
+       
         if request.method == 'POST': # ถ้า method ที่ได้มามีค่าเป็น POST 
             
-                #for file in request.FILES:
-               #files.append(request.FILES['form-0-image'])
 
             LectureForm = LectureForms(request.POST) #เรียกใช้งาน LectureForms จาก forms.py 
-            #Imageform = Lecture_imgForms(request.POST,request.FILES['image'])
+            
             if LectureForm.is_valid(): #เช็คว่า forms นั้นถูกต้องมั้ย
                 LectureForm = LectureForm.save(commit=False) 
                 LectureForm.author = profileObj #นำชื่อผู้ใช้งานไปเก็บใน author ซึ่งเป็น model ที่ได้สร้างไว้
@@ -118,7 +117,7 @@ def lecture(request,lecture_id):
         return HttpResponseRedirect("/" + request.POST.get('noteID')) #แสดงผลออกมา noteIDคือรหัสของnote
     else:
         noteObj = Lecture.objects.get(id = lecture_id)
-        imageObjList = noteObj.Lecture_img.all() #ทำการเก็บรูปภาพทั้งหมดที่จะอัพไว้เพื่อแสดง
+        imageObjList = noteObj.Lecture_img.all() #นำรูปภาพทั้งหมดของ note มาเก็บไว้ในตัว imageObjList เพื่อนำไปแสดงผล
         return render(request, 'notedetail.html',{'noteObj': noteObj, "imageObjList": imageObjList}) #ทำการ render html เพื่อแสดงnoteพร้อมรายละเอียด
 
 def profile(request, username):
