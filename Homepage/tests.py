@@ -126,6 +126,7 @@ class HomePageTest(TestCase):
 
         self.assertEqual(response.status_code,200)
         self.assertIn('test',y) #เช็คว่ามี test อยู่ในระบบมั้ย
+        
     def test_change_password(self):
         creator = User.objects.create_user(username = 'tim01',password = 'pass') #สร้างผู้ใช้งาน
         creatorProfile = Profile.objects.create(user = creator) #สร้าง Profile ของผู้ใช้งาน
