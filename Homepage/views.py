@@ -49,7 +49,7 @@ def home(request): # หน้า home ของ Website
 
         
         for note in Lecture.objects.annotate(count=Count('userSaved')).order_by('count')[:8][::-1]:
-            popularNote.append(NoteWithThumbnail(note, note.Lecture_img.all()[0])) #เพิ่ม note ที่ถูก save จำนวนมากไปยัง popularNote พร้อมรูปภาพ
+            popularNote.append(NoteWithThumbnail(note, note.Lecture_img.all()[0])) #เพิ่ม note ที่ถูก save เรียงจากจำนวน save มากไปยังจำนวน save น้อย ให้ไปยัง popularNote พร้อมรูปภาพ
 
         return render(request, 'home.html',{'latestNote':latestNote, 'popularNote':popularNote})# ทำการ render html เพื่อแสดงหน้า home พร้อมแสดง  latestNote และ popularNote
 
