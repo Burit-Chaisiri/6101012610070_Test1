@@ -132,7 +132,7 @@ def profile(request, username):
             return HttpResponseRedirect("/profile/"+username) #ทำการแสดงหน้า 
     else:
         form=Profileform()# สร้างตัวแปรที่เก็บ modelของ forms ไว้
-        myNote = []# note ที่ผู็ใช้งานได้ uploadไป
+        myNote = []# note ที่ผู้ใช้งานได้ uploadไป
         savedNote = [] #note ที่ผู้ใช้งานได้save
         saves = 0 #จำนวน note ที่ผู้ใช้งานได้save
         for note in profileObj.author.all(): #ทำการตรวจสอบใน profileของผู้ใช้งานทั้งหมด
