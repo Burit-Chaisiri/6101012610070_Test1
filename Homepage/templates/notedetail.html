@@ -44,6 +44,12 @@
                     <button type="summit" class="btn" name="noteID" value="{{ noteObj.id }}"><i class="fa fa-heart"></i>
                         Save Note</button>
                 </form>
+                {% else %}
+                <form action="" method="post">
+                {% csrf_token %}
+                <button type="summit" class="btn" name="noteID" value="{{ noteObj.id }}"><i class=""></i>
+                        Delete Note</button>
+                </form>
                 {% endif %}
                 {% else %}
                 <a href="/accounts/login">please login to save notes</a>
