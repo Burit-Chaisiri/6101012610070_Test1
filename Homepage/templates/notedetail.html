@@ -41,13 +41,13 @@
                 {% if user.username != noteObj.author.user.username %}
                 <form action="" method="post">
                     {% csrf_token %}
-                    <button type="summit" class="btn" name="noteID" value="{{ noteObj.id }}"><i class="fa fa-heart"></i>
+                    <button type="summit" class="btn" name="save_note" value="{{ noteObj.id }}"><i class="fa fa-heart"></i>
                         Save Note</button>
                 </form>
                 {% else %}
                 <form action="" method="post">
                 {% csrf_token %}
-                <button type="summit" class="btn" name="noteID" value="{{ noteObj.id }}"><i class=""></i>
+                <button type="summit" class="btn" name="delete_note" value="{{ noteObj.id }}"><i class="fa fa-ban"></i>
                         Delete Note</button>
                 </form>
                 {% endif %}
