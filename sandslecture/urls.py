@@ -29,7 +29,8 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('help/', views.help, name='help'),
     path('upload/',views.upload,name='upload'),
-    path('<int:lecture_id>/', views.note, name='note'),
+    path('<int:lecture_id>/', views.save, name='save'),
+    path('<int:lecture_id>/delete/', views.delete, name='delete'),
     path('profile/<str:username>/', views.profile, name='profile'),
 
 

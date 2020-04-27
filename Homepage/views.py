@@ -107,24 +107,29 @@ def about(request):
 def help(request):
     return render(request,'help.html') # ทำการ render html เพื่อแสดงหน้า help
 
-def note(request,lecture_id): 
+def save(request,lecture_id): 
     if request.GET.get ("save_note"): # ถ้า method ที่ได้มามีค่าเป็น GET
         profileObj = Profile.objects.get(user = request.user) #ดึงข้อมูลของผู้ใช้งานมาเก็บไปไว้ในตัวแปร
         noteObj = Lecture.objects.get(id = int(request.GET.get('save_note'))) #ดึง noteมาเก็บไว้ในตัวแปร
         if profileObj not in noteObj.userSaved.all():
             noteObj.userSaved.add(profileObj)#ทำการเพิ่ม  profileObj เข้าไป
             noteObj.save() #ทำการบันทึก
-        return HttpResponseRedirect("/" + request.GET.get('save_note')) #แสดงผลออกมา noteIDคือรหัสของnote
-    elif request.GET.get ("delete_note"):
-        noteObj = Lecture.objects.get(id = lecture_id)
-        imageObjList = noteObj.Lecture_img.all() #นำรูปภาพทั้งหมดของ note มาเก็บไว้ในตัว imageObjList เพื่อนำไปแสดงผล
-        noteObj.delete()
-        imageObjList.delete()
-        return redirect('/')   
+        return HttpResponseRedirect("/" + request.GET.get('save_note')) #แสดงผลออกมา noteIDคือรหัสของnote 
     else:
         noteObj = Lecture.objects.get(id = lecture_id)
         imageObjList = noteObj.Lecture_img.all() #นำรูปภาพทั้งหมดของ note มาเก็บไว้ในตัว imageObjList เพื่อนำไปแสดงผล
         return render(request, 'notedetail.html',{'noteObj': noteObj, "imageObjList": imageObjList}) #ทำการ render html เพื่อแสดงnoteพร้อมรายละเอียด
+def delete(request,lecture_id):
+    if request.GET.get ("delete_note"):
+        noteObj = Lecture.objects.get(id = lecture_id)
+        imageObjList = noteObj.Lecture_img.all() #นำรูปภาพทั้งหมดของ note มาเก็บไว้ในตัว imageObjList เพื่อนำไปแสดงผล
+        noteObj.delete()
+        imageObjList.delete()
+        return redirect('/')
+    else:
+        noteObj = Lecture.objects.get(id = lecture_id)
+        imageObjList = noteObj.Lecture_img.all() #นำรูปภาพทั้งหมดของ note มาเก็บไว้ในตัว imageObjList เพื่อนำไปแสดงผล
+        return render(request, 'notedetail.html',{'noteObj': noteObj, "imageObjList": imageObjList}) #ทำการ render html เพื่อแสดงnoteพร้อมรายละเอียด  
 
 def profile(request, username):
     userObj = User.objects.get(username = username) #ดึงชื่อของผู้ใช้งาน
