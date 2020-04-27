@@ -107,8 +107,8 @@ def about(request):
 def help(request):
     return render(request,'help.html') # ทำการ render html เพื่อแสดงหน้า help
 
-def save_and_delete(request,lecture_id): 
-    if request.GET.get ("save_note"): # ถ้า method ที่ได้มามีค่าเป็น POST 
+def note(request,lecture_id): 
+    if request.GET.get ("save_note"): # ถ้า method ที่ได้มามีค่าเป็น GET
         profileObj = Profile.objects.get(user = request.user) #ดึงข้อมูลของผู้ใช้งานมาเก็บไปไว้ในตัวแปร
         noteObj = Lecture.objects.get(id = int(request.GET.get('save_note'))) #ดึง noteมาเก็บไว้ในตัวแปร
         if profileObj not in noteObj.userSaved.all():
@@ -120,8 +120,7 @@ def save_and_delete(request,lecture_id):
         imageObjList = noteObj.Lecture_img.all() #นำรูปภาพทั้งหมดของ note มาเก็บไว้ในตัว imageObjList เพื่อนำไปแสดงผล
         noteObj.delete()
         imageObjList.delete()
-        return redirect('/')
-            
+        return redirect('/')   
     else:
         noteObj = Lecture.objects.get(id = lecture_id)
         imageObjList = noteObj.Lecture_img.all() #นำรูปภาพทั้งหมดของ note มาเก็บไว้ในตัว imageObjList เพื่อนำไปแสดงผล
