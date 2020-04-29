@@ -10,11 +10,11 @@ from django.http import Http404
 from django.db.models import Count
 from django.contrib import messages
 
+
 class NoteWithThumbnail:
     def __init__(self, note, thumbnail):
         self.note = note
         self.thumbnail = thumbnail
-# Create your views here.
 
 def signup(request): # สมัครไอดีที่จะเข้าใช้งาน
     if request.method == 'POST': # ถ้า method ที่ได้มามีค่าเป็น POST 
