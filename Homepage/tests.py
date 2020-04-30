@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import glob
 
+
 class HomePageTest(TestCase):
 
     def test_adding_new_model_Profile(self): # testการเพิ่ม Profile ของผู้ใช้งาน
@@ -66,10 +67,6 @@ class HomePageTest(TestCase):
 
         self.assertNotEquals(Count_object,"<ImageFieldFile: None>") #เช็คว่า จำนวนของรูป Profile ไม่เท่ากับ None รึเปล่า
 
-
-
-
-
     def test_submit_Lecture(self):
         c = Client()  #ผู้ใช้งาน
         localtion=BASE_DIR  #ระบุตำแหน่งที่เก็บของ รูปภาพ
@@ -83,7 +80,6 @@ class HomePageTest(TestCase):
         self.assertEqual(CountLec,1) #เช็คว่าจำนวน note เท่ากับ 1 รึเปล่า
         self.assertEqual(Count_object,1) #เช็คว่าจำนวน รูปภาพของnote เท่ากับ 1 รึเปล่า
 
-
     def test_upload_Muti_Pic_Lecture(self):
         c=Client() #ผู้ใช้งาน
         localtion=BASE_DIR #ระบุตำแหน่งที่เก็บของ รูปภาพ
@@ -95,7 +91,6 @@ class HomePageTest(TestCase):
         self.assertEqual(Lecture.objects.count(),1) #เช็คว่าจำนวน note เท่ากับ 1 รึเปล่า
         self.assertEqual(Lecture_img.objects.count(),2)#เช็คว่าจำนวน รูปภาพของnote เท่ากับ 2 รึเปล่า
 
-    
     def test_saves_Lecture(self):
         creator = User.objects.create_user(username = 'tim01',password = 'pass') #สร้างผู้ใช้งาน
         userB = User.objects.create_user(username = 'tim21',password = 'pass')#สร้างผู้ใช้งาน
@@ -137,7 +132,6 @@ class HomePageTest(TestCase):
         
         self.assertEqual(Login_test_new_pass.status_code,200)
         self.assertIn("tim01",Login_test_new_pass.content.decode())
-
     
     def test_Lecture_show_on_home(self):
         localtion=BASE_DIR #ระบุตำแหน่งที่เก็บของ รูปภาพ
@@ -162,6 +156,26 @@ class HomePageTest(TestCase):
 
         self.assertIn('666.png',Profile_page) # มีรูป note อยู่ในหน้า Profile มั้ย
         self.assertIn('tim',Profile_page)  # มีชื่อหัวข้อ note อยู่ในหน้า Profile มั้ย
+
+    def test_delete_note(self):
+        localtion=BASE_DIR #ระบุตำแหน่งที่เก็บของ รูปภาพ
+        Tom =User.objects.create_user(username='Tomson',password='123456') #สร้างผู้ใช้งาน
+        ProfileTom=Profile.objects.create(user=Tom) #สร้าง Profile ของผู้ใช้งาน
+        self.client.post('/accounts/login/', {'username':'Tomson','password':"123456" } )  #ทำการ login เข้าไป
+        upload=self.client.post('/upload/', {'title':'Tom','description':"show exam" ,'image':SimpleUploadedFile('666.png', content=open(localtion+'/red.png', 'rb').read())} )  #อัพโหลด note
+        
+        Profile_page=Client().post('/profile/Tomson/',follow=True).content.decode()
+
+        lec_id = Lecture.objects.get(title='Tom')
+        
+        self.assertIn('666.png',Profile_page) # มีรูป note อยู่ในหน้า Profile มั้ย
+        self.assertIn('Tom',Profile_page)  # มีชื่อหัวข้อ note อยู่ในหน้า Profile มั้ย
+
+        self.client.get('/1/delete/', {'delete_note':'{lec_id.id}'})
+
+        self.assertEqual(Lecture.objects.count(),0)
+
+
 
     def tearDown(self):
         for i in glob.glob(BASE_DIR+'/sandslecture/media/*'):
