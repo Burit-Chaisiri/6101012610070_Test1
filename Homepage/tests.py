@@ -163,16 +163,23 @@ class HomePageTest(TestCase):
         ProfileTom=Profile.objects.create(user=Tom) #สร้าง Profile ของผู้ใช้งาน
         self.client.post('/accounts/login/', {'username':'Tomson','password':"123456" } )  #ทำการ login เข้าไป
         upload=self.client.post('/upload/', {'title':'Tom','description':"show exam" ,'image':SimpleUploadedFile('666.png', content=open(localtion+'/red.png', 'rb').read())} )  #อัพโหลด note
-        
+        upload_note2=self.client.post('/upload/', {'title':'Tomeson','description':"showexam" ,'image':SimpleUploadedFile('666.png', content=open(localtion+'/red.png', 'rb').read())} )  #อัพโหลด note
         Profile_page=Client().post('/profile/Tomson/',follow=True).content.decode()
 
         lec_id = Lecture.objects.get(title='Tom')
+        lec_id2 = Lecture.objects.get(title='Tomeson')
         
         self.assertIn('666.png',Profile_page) # มีรูป note อยู่ในหน้า Profile มั้ย
         self.assertIn('Tom',Profile_page)  # มีชื่อหัวข้อ note อยู่ในหน้า Profile มั้ย
 
+        self.assertEqual(Lecture.objects.count(),2)
+
         self.client.get('/1/delete/', {'delete_note':'{lec_id.id}'})
 
+        self.assertEqual(Lecture.objects.count(),1)
+
+        self.client.get('/2/delete/', {'delete_note':'{lec_id2.id}'})
+        
         self.assertEqual(Lecture.objects.count(),0)
 
 
