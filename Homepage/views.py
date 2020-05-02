@@ -123,7 +123,9 @@ def delete(request,lecture_id):
     if request.GET.get ("delete_note"):
         noteObj = Lecture.objects.get(id = lecture_id)
         imageObjList = noteObj.Lecture_img.all() #นำรูปภาพทั้งหมดของ note มาเก็บไว้ในตัว imageObjList เพื่อนำไปแสดงผล
-        noteObj.delete()
+        
+        #noteObj.delete()
+        del_lec = Lecture.objects.filter(id=lecture_id).delete()
         imageObjList.delete()
         return redirect('/')
     else:

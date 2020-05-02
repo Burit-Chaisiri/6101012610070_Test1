@@ -159,30 +159,30 @@ class HomePageTest(TestCase):
 
     def test_delete_note(self):
         localtion=BASE_DIR #ระบุตำแหน่งที่เก็บของ รูปภาพ
-        Tom =User.objects.create_user(username='Tomson',password='123456') #สร้างผู้ใช้งาน
-        ProfileTom=Profile.objects.create(user=Tom) #สร้าง Profile ของผู้ใช้งาน
+        Tomson =User.objects.create_user(username='Tomson',password='123456') #สร้างผู้ใช้งาน
+        ProfileTom=Profile.objects.create(user=Tomson) #สร้าง Profile ของผู้ใช้งาน
         self.client.post('/accounts/login/', {'username':'Tomson','password':"123456" } )  #ทำการ login เข้าไป
         upload=self.client.post('/upload/', {'title':'Tom','description':"show exam" ,'image':SimpleUploadedFile('666.png', content=open(localtion+'/red.png', 'rb').read())} )  #อัพโหลด note
         upload_note2=self.client.post('/upload/', {'title':'Tomeson','description':"showexam" ,'image':SimpleUploadedFile('666.png', content=open(localtion+'/red.png', 'rb').read())} )  #อัพโหลด note
         Profile_page=Client().post('/profile/Tomson/',follow=True).content.decode()
 
-        lec_id = Lecture.objects.get(title='Tom')
+        #ลบ lec Tom
+        lec_id = Lecture.objects.get(title='Tom') 
+        
+        self.client.get(f'/{lec_id.id}/delete/', {'delete_note':'{lec_id.id}'})   
+
+        check_lec = Lecture.objects.filter(title="Tom") 
+          
+        self.assertEqual(check_lec.count(),0)   
+
+        #ลบ lec Tomeson
         lec_id2 = Lecture.objects.get(title='Tomeson')
         
-        self.assertIn('666.png',Profile_page) # มีรูป note อยู่ในหน้า Profile มั้ย
-        self.assertIn('Tom',Profile_page)  # มีชื่อหัวข้อ note อยู่ในหน้า Profile มั้ย
+        self.client.get(f'/{lec_id2.id}/delete/', {'delete_note':'{lec_id2.id}'})
 
-        self.assertEqual(Lecture.objects.count(),2)
-
-        self.client.get('/1/delete/', {'delete_note':'{lec_id.id}'})
-
-        self.assertEqual(Lecture.objects.count(),1)
-
-        self.client.get('/2/delete/', {'delete_note':'{lec_id2.id}'})
+        check_lec2 = Lecture.objects.filter(title="Tomeson")
+        self.assertEqual(check_lec2.count(),0)
         
-        self.assertEqual(Lecture.objects.count(),0)
-
-
 
     def tearDown(self):
         for i in glob.glob(BASE_DIR+'/sandslecture/media/*'):
