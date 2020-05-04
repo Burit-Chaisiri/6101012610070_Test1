@@ -164,7 +164,11 @@ class HomePageTest(TestCase):
         self.client.post('/accounts/login/', {'username':'Tomson','password':"123456" } )  #ทำการ login เข้าไป
         upload=self.client.post('/upload/', {'title':'Tom','description':"show exam" ,'image':SimpleUploadedFile('666.png', content=open(localtion+'/red.png', 'rb').read())} )  #อัพโหลด note
         upload_note2=self.client.post('/upload/', {'title':'Tomeson','description':"showexam" ,'image':SimpleUploadedFile('666.png', content=open(localtion+'/red.png', 'rb').read())} )  #อัพโหลด note
+        upload_note3=self.client.post('/upload/', {'title':'Tomsmart','description':"show_exam" ,'image':SimpleUploadedFile('666.png', content=open(localtion+'/red.png', 'rb').read())} )  #อัพโหลด note
         Profile_page=Client().post('/profile/Tomson/',follow=True).content.decode()
+
+        lectures = Lecture.objects.all()
+        self.assertEqual(lectures.count(),3)
 
         #ลบ lec Tom
         lec_id = Lecture.objects.get(title='Tom') 
@@ -174,6 +178,7 @@ class HomePageTest(TestCase):
         check_lec = Lecture.objects.filter(title="Tom") 
           
         self.assertEqual(check_lec.count(),0)   
+        self.assertEqual(lectures.count(),2)
 
         #ลบ lec Tomeson
         lec_id2 = Lecture.objects.get(title='Tomeson')
@@ -182,7 +187,10 @@ class HomePageTest(TestCase):
 
         check_lec2 = Lecture.objects.filter(title="Tomeson")
         self.assertEqual(check_lec2.count(),0)
+        self.assertEqual(lectures.count(),1)
         
+
+
 
     def tearDown(self):
         for i in glob.glob(BASE_DIR+'/sandslecture/media/*'):
